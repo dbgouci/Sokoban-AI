@@ -22,19 +22,23 @@ print(map.moves) # This is a property, so no need to add parenthesis
 Content of map.moves:
 
 map.moves
+|
 |--- (X, X) # Tuple location of box, will always have the four directions regardless if they can be pushed or not
-     |--- 'U'
-          |--- ['U', 'R', 'U'] # NOTE: the last move is the pushing of the box
-     |--- 'R'
-          |--- [] # If a path cannot be found, it will be empty
-     |--- 'D'
-          |--- []
-     |--- 'L'
-          |--- []
+     |
+     |--- 'U': ['U', 'R', 'U'] # NOTE: the last move is the pushing of the box
+     |
+     |--- 'R': [] # If a path cannot be found, it will be empty
+     |
+     |--- 'D': []
+     |
+     |--- 'L': []
+|
 |--- (X, Y)
      ...
+|
 |--- (Y, X)
      ...
+...
 ```
 
 #### SKBMap.data
