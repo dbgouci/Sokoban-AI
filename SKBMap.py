@@ -33,6 +33,7 @@ class SKBMap:
         # Find moves
         self._moves = self._find_moves()
 
+
 # Public definitions
     @property
     def size(self):
@@ -183,7 +184,7 @@ class SKBMap:
             def boxes(self) -> int:
                 return self._size[1]
             @property
-            def storage_locations(self) -> int:
+            def storage(self) -> int:
                 return self._size[2]
             @property
             def bounds(self) -> tuple:
