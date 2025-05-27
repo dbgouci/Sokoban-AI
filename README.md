@@ -1,6 +1,6 @@
 Get dependencies using:
 
-`pip install {path to requirements.txt}`
+`pip install -r {path to requirements.txt}`
 
 ## SKBMap.py Usage
 
