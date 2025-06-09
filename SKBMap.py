@@ -133,18 +133,27 @@ class SKBMap:
         """
         skbm = [['_' for _ in range(self._bounds[1])] for _ in range(self._bounds[0])]
         piece_type = ['W', 'B', 'S', 'P']
-        for i in range(3):
+        for i in range(2):
             for piece in self._skbm[i+1]:
                 if not self._within_bounds(piece):
                     raise self.SKBOutofBoundsError(self._bounds, piece)
                 if skbm[piece[0]-1][piece[1]-1] != '_':
                     raise self.SKBConflictingPieceError(skbm[piece[0]-1][piece[1]-1], piece, piece_type[i])
                 skbm[piece[0]-1][piece[1]-1] = piece_type[i]
+        # Exception for Storage Locations
+        for piece in self._skbm[3]:
+            if not self._within_bounds(piece):
+                raise self.SKBOutofBoundsError(self._bounds, piece)
+            if skbm[piece[0]-1][piece[1]-1] != '_':
+                if skbm[piece[0]-1][piece[1]-1] != 'B':
+                    raise self.SKBConflictingPieceError(skbm[piece[0]-1][piece[1]-1], piece, piece_type[2])
+            elif skbm[piece[0]-1][piece[1]-1] == '_':
+                skbm[piece[0]-1][piece[1]-1] = piece_type[2]
         # Player location
         player = self._skbm[4]
         if not self._within_bounds(player):
             raise self.SKBOutofBoundsError(self._bounds, player)
-        if skbm[player[0]-1][player[1]-1] != '_':
+        if skbm[player[0]-1][player[1]-1] == 'W' or skbm[player[0]-1][player[1]-1] == 'B':
             raise self.SKBConflictingPieceError(skbm[player[0]-1][player[1]-1], player, piece_type[3])
         skbm[player[0]-1][player[1]-1] = piece_type[3]
         return skbm
@@ -251,8 +260,9 @@ class SKBMap:
 
 
 if __name__ == "__main__":
-    map = SKBMap('sokoban01.txt')
-    
+    map = SKBMap('sokoban00.txt')
+    data = map.data
+    map = SKBMap(data)
     # Visualize
     map.display()
 
