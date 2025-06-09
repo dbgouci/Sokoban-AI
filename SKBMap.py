@@ -33,6 +33,9 @@ class SKBMap:
         # Find moves
         self._moves = self._find_moves()
 
+        # Find heuristics
+        self._close = self._find_close()
+
 
 # Public definitions
     @property
@@ -63,6 +66,14 @@ class SKBMap:
         return moves
 
     @property
+    def close(self) -> list[int]:
+        """
+        Returns a list of how close each box is to the closest
+        storage space.
+        """
+        return self._close
+
+    @property
     def data(self):
         """
         Returns parsed data of the current board state.
@@ -90,7 +101,7 @@ class SKBMap:
 
 
 # Private definitions
-    def _find_moves(self):
+    def _find_moves(self) -> list:
         """
         Displays a list of moves
         """
@@ -120,6 +131,22 @@ class SKBMap:
                     moves_dir.append([])
             moves.append(moves_dir)
         return moves
+
+    def _find_close(self) -> list:
+        """
+        Returns how close each box is with respect to walls.
+        """
+        # Very spaghetti, never forgetti
+        distance = []
+        matrix = [[1 if piece == '_' or piece == 'S' or piece == 'P' else 0 for piece in row]for row in self._skbm_grid]
+        grid = Grid(matrix = matrix)
+        finder = AStarFinder(diagonal_movement=DiagonalMovement.never) # Initialize A*
+        storage_nodes = {storage: grid.node(storage[1]-1, storage[0]-1) for storage in self._loc.storage}
+        for box in self._loc.boxes:
+            start = grid.node(box[1]-1, box[0]-1)
+            potential = [len(finder.find_path(start, end, grid)[0]) for end in storage_nodes.values()]
+            distance.append(min(potential))
+        return distance
     
     def _to_grid(self) -> list[list]:
         """

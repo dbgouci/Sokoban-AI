@@ -13,6 +13,7 @@ class SKBGame:
         self._moves = self._get_moves()
         self._all_moves = self._get_all_moves()
         self._history = history.copy()
+        self._heuristics = self._create_heuristics(self._map)
 
 # Public definitions
     def display(self):
@@ -49,6 +50,13 @@ class SKBGame:
         return 1
 
     @property
+    def heuristics(self):
+        """
+        Returns various heuristics.
+        """
+        return self._heuristics
+
+    @property
     def choices_all(self) -> list:
         """
         Returns list of all boxes.
@@ -80,19 +88,25 @@ class SKBGame:
 
     def pick_all(self, choice: int):
         """
-        returns a new SKBGame updated by any choice. Note this can break the game.
+        returns a new SKBGame updated by any choice. Second parameter
+        is 1 when valid, 0 when invalid.
         """
         new_map = [layer[:] for layer in self._map.data] # Deep copy
         new_history = self._history[:] # Deep copy
+        valid = 0
         
         move = self._all_moves[choice]
-        box = new_map[2][move[0]]
-        direction = {'R': (0, 1), 'U': (-1, 0), 'L': (0, -1), 'D': (1, 0)}.get(move[1])
-        new_history += self._map.moves[box][move[1]]
-        new_map[2][move[0]] = tuple(x + y for x, y in zip(box, direction))
-        new_map[4] = box
+        
+        if self._map.moves[move[2]][move[1]]:
+            box = new_map[2][move[0]]
+            direction = {'R': (0, 1), 'U': (-1, 0), 'L': (0, -1), 'D': (1, 0)}.get(move[1])
+            new_history += self._map.moves[box][move[1]]
+            new_map[2][move[0]] = tuple(x + y for x, y in zip(box, direction))
+            new_map[4] = box
+            valid = 1
+            
         new_game = SKBGame(new_map, new_history)
-        return new_game
+        return new_game, valid
 
 # Private definitions
     def _get_moves(self):
@@ -115,3 +129,15 @@ class SKBGame:
             for direction, path in self._map.moves[box].items():
                 boxes.append((index, direction, box))
         return boxes
+
+    def _create_heuristics(self, skbmap):
+        class _Heuristics:
+            """
+            Holds heuristic information about the board.
+            """
+            def __init__(self, skbmap):
+                self._close = skbmap.close
+            @property
+            def close(self):
+                return self._close
+        return _Heuristics(skbmap)
