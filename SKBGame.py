@@ -23,7 +23,8 @@ class SKBGame:
         for i, move in enumerate(self._moves):
             print(f'{i}: {move[2]}{move[1]}')
 
-    def get_map(self):
+    @property
+    def map(self):
         """
         Returns the SKBMap if needed for anything.
         """
@@ -79,7 +80,7 @@ class SKBGame:
 
     def pick_all(self, choice: int):
         """
-        returns a new SKBGame updated by all choices. Note this can break the game.
+        returns a new SKBGame updated by any choice. Note this can break the game.
         """
         new_map = [layer[:] for layer in self._map.data] # Deep copy
         new_history = self._history[:] # Deep copy
