@@ -35,6 +35,7 @@ class SKBMap:
 
         # Find heuristics
         self._close = self._find_close()
+        self._dead = self._find_dead()
 
 
 # Public definitions
@@ -72,6 +73,13 @@ class SKBMap:
         storage space.
         """
         return self._close
+
+    @property
+    def dead(self) -> list[bool]:
+        """
+        Returns a list of bools of whether a box can move anymore. 
+        """
+        return self._dead
 
     @property
     def data(self):
@@ -132,7 +140,7 @@ class SKBMap:
             moves.append(moves_dir)
         return moves
 
-    def _find_close(self) -> list:
+    def _find_close(self) -> list[int]:
         """
         Returns how close each box is with respect to walls.
         """
@@ -147,6 +155,28 @@ class SKBMap:
             potential = [len(finder.find_path(start, end, grid)[0]) for end in storage_nodes.values()]
             distance.append(min(potential))
         return distance
+
+    def _find_dead(self) -> list[bool]:
+        """
+        Returns whether a box can no longer move or not.
+        """
+        dead = []
+        for i, box in enumerate(self._loc.boxes):
+            if self._close[i] == 0:
+                dead.append(self._corner(box))
+            else:
+                dead.append(False)
+        return dead
+
+    def _corner(self, box: tuple) -> bool:
+        """
+        Returns whether box is in a corner.
+        """
+        directions = [(0, 1), (-1, 0), (0, -1), (1, 0)]
+        corner = []
+        for direction in directions:
+            corner.append('W' == self._skbm_grid[box[0]-1 + direction[0]][box[1]-1 + direction[1]])
+        return any(corner[i] and corner[i+1] for i in range(3)) or (corner[0] and corner[-1])
     
     def _to_grid(self) -> list[list]:
         """

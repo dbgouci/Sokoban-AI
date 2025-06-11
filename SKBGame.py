@@ -137,7 +137,11 @@ class SKBGame:
             """
             def __init__(self, skbmap):
                 self._close = skbmap.close
+                self._dead = skbmap.dead
             @property
             def close(self):
                 return self._close
+            @property
+            def dead(self):
+                return self._dead
         return _Heuristics(skbmap)
